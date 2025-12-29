@@ -9,6 +9,10 @@ export default function Post() {
     const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
+    const [img, setimg] = useState("")
+
+
+    
 
     const userData = useSelector((state) => state.authreducer.userData);
 

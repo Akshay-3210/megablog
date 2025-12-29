@@ -13,7 +13,8 @@ function App() {
     authservice.getCurrentUser()
     .then((userdata)=>{
       if(userdata){
-        dispatch(login({userdata}));
+        // reducer expects payload.userData
+        dispatch(login({ userData: userdata }));
       }
       else{
         dispatch(logout());

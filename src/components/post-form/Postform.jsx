@@ -1,9 +1,11 @@
-import React,{useCallback,useEffect} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {Button,Input,Select,RTE} from "../index"
 import service from "../../appwrite/config";
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+
 
 function Postform({post}) {
     const {register,handleSubmit,watch,setValue,control,getValues} =useForm({
@@ -18,37 +20,68 @@ function Postform({post}) {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.authreducer.userData)
 
+    const [error, setError] = useState("")
+
     const submit = async (data) => {
-      if (post) {
-        const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
+      setError("")
+      try {
+        if (post) {
+          const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
 
-        if (file) {
-          await service.deleteFile(post.featuredimage)
+          if (file && post.featuredimage) {
+            await service.deleteFile(post.featuredimage)
+          }
+
+          const dbPost = await service.updatePost(post.$id, {
+            ...data,
+            featuredimage: file ? file.$id : post.featuredimage,
+          })
+
+          if (dbPost) {
+            navigate(`/post/${dbPost.$id}`)
+          }
+        } else {
+          const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
+
+          if (file) {
+            data.featuredimage = file.$id
+          }
+
+          // Try creating the post; if slug collision occurs, retry once with suffix
+          try {
+            console.log(userData);
+            
+            const dbPost = await service.createPost({
+              ...data,
+              userid: userData.$id,
+            })
+
+            if (dbPost) {
+              navigate(`/post/${dbPost.$id}`)
+              return
+            }
+
+            // If createPost returned falsy (service swallowed error), throw to fallback
+            throw new Error('createPost returned falsy result')
+          } catch (err) {
+            // attempt to recover from duplicate slug (document exists)
+            const msg = (err && err.message) || ''
+            if (/already exists|duplicate/i.test(msg) || /createPost returned falsy result/i.test(msg)) {
+              const uniqSlug = `${data.slug || 'post'}-${Math.random().toString(36).slice(2,6)}`
+              data.slug = uniqSlug
+              const dbPost2 = await service.createPost({ ...data, userid: userData.$id })
+              if (dbPost2) {
+                navigate(`/post/${dbPost2.$id}`)
+                return
+              }
+            }
+
+            throw err
+          }
         }
-
-        const dbPost = await service.updatePost(post.$id, {
-          ...data,
-          featuredimage: file ? file.$id : post.featuredimage,
-        })
-
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`)
-        }
-      } else {
-        const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
-
-        if (file) {
-          data.featuredimage = file.$id
-        }
-
-        const dbPost = await service.createPost({
-          ...data,
-          userid: userData.$id,
-        })
-
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`)
-        }
+      } catch (err) {
+        console.error('submit post error:', err)
+        setError(err.message || 'An error occurred while saving the post')
       }
     }
 
@@ -82,6 +115,7 @@ function Postform({post}) {
     
   return (
      <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+            {error && <p className="text-red-600 w-full text-center mb-4">{error}</p>}
             <div className="w-2/3 px-2">
                 <Input
                     label="Title :"

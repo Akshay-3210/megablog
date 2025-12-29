@@ -31,7 +31,7 @@ export class Service{
 
         } catch (error) {
             console.log("createpost::error ",error);
-            
+            throw error;
         }
     }
 
