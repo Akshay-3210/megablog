@@ -16,41 +16,40 @@ function Postform({post}) {
     });
 
     const navigate = useNavigate();
-    const userData = useSelector(state => state.userData)
+    const userData = useSelector((state) => state.authreducer.userData)
 
-    const submit = async (data) =>{
-        if(post){
-          const file =  data.image[0] ? service.uploadFile(data.image[0]) : null
-        
-          if(file){
-            service.deleteFile(post.featuredImage)
-          }
-          const dbPost = await service.updatePost(post.$id,{
-            ...data,
-            featuredimage:file ? file.id : undefined
-          })
-          if(dbPost){
-            navigate(`/post/${dbPost.$id}`)
-          }
+    const submit = async (data) => {
+      if (post) {
+        const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
 
+        if (file) {
+          await service.deleteFile(post.featuredimage)
         }
-        else{
-            const file =  data.image[0] ? service.uploadFile(data.image[0]) : null
 
-            if(file){
-                const id=file.$id;
-                data.featuredImage=id;
-                
-                const dbPost=await service.createPost({
-                    ...data,
-                    userid : userData.id,
-                });
-                 if(dbPost){
-                    navigate(`/post/${dbPost.$id}`)
-                }
-            }
+        const dbPost = await service.updatePost(post.$id, {
+          ...data,
+          featuredimage: file ? file.$id : post.featuredimage,
+        })
+
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`)
         }
-      
+      } else {
+        const file = data.image && data.image[0] ? await service.uploadFile(data.image[0]) : null
+
+        if (file) {
+          data.featuredimage = file.$id
+        }
+
+        const dbPost = await service.createPost({
+          ...data,
+          userid: userData.$id,
+        })
+
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`)
+        }
+      }
     }
 
     const slugTransform = useCallback((value)=>{
@@ -58,7 +57,7 @@ function Postform({post}) {
         return  value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g,'-')
+        .replace(/[^a-zA-Z\d\s]+/g,'-')
         .replace(/\s/g,'-')
 
       }
@@ -112,7 +111,7 @@ function Postform({post}) {
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={appwriteService.getFilePreview(post.featuredImage)}
+                            src={service.getFilePreview(post.featuredimage)}
                             alt={post.title}
                             className="rounded-lg"
                         />

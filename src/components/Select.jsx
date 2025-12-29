@@ -1,4 +1,4 @@
-import React,{useid} from 'react'
+import React, { useId } from 'react'
 
 function Select({
     options,
@@ -6,13 +6,14 @@ function Select({
     className="",
     ...props
 },ref) {
-    const id=useid();
+    const id=useId();
   return (
     <div className='w-full'>
-      {label && <label
-      htmlFor={id}
-      className=''
-      ></label>}
+      {label && (
+        <label htmlFor={id} className=''>
+          {label}
+        </label>
+      )}
       <select
       {...props}
       id={id}
@@ -21,11 +22,15 @@ function Select({
                  focus:bg-gray-50 duration-200 border border-gray-200 w-full  
                  ${className}`}
       >
-        {options?.map((option)=>(
-            <option key={option} value={option}>
-                {option}
-            </option>
-        ))}
+        {options?.map((option) => {
+            const value = typeof option === 'string' ? option : option.value
+            const labelText = typeof option === 'string' ? option : (option.label ?? option.value)
+            return (
+              <option key={value} value={value}>
+                {labelText}
+              </option>
+            )
+        })}
 
       </select>
     </div>

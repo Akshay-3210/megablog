@@ -16,8 +16,11 @@ export default function RTE({name,control,label,
         control={control}
         render={({field:{onChange}})=>(
           <Editor
+          // apiKey='su3hf0g2nyvwpohon4wljphy0owduhyb7wnec9a7u5abcyxi'
+           tinymceScriptSrc="../../node_modules/tinymce/tinymce.min.js"
           initialValue={defaultValue}
           init={{
+            license_key: "gpl",
             height:500,
             menubar:true,
             plugins:[
@@ -47,7 +50,9 @@ export default function RTE({name,control,label,
               alignleft aligncenter bold italic forecolor | \
               alignleft aligncenter alignright alignjustify | \
               bullist numlist outdent indent |removeformat | help",
-            content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+            content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            base_url: "../../node_modules/tinymce",
+        suffix: ".min",
           }}
           onEditorChange={onChange}
         />

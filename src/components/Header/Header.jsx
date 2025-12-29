@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 
 
 function Header() {
-  const authstatus=useSelector((state)=> state.status)
+  const authstatus = useSelector((state) => state.authreducer.status)
   const navigate = useNavigate()
 
   const navItems=[
