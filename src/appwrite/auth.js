@@ -38,20 +38,19 @@ export class Authservice{
         }
     }
 
-    // async login({email,password}){
-    //     try {
-    //         return await this.account.createEmailPasswordSession({
-    //          email: email, 
-    //         password: password
-    //         });
+//     async login({email,password}){
+//         try {
+//     return await this.account.createEmailPasswordSession({
+//       email,
+//       password
+//     });
 
-    //     } catch (error) {
-    //         console.log("login::error ",error);
-    //         throw error;
-            
-    //     }
-    // }
-    async login({ email, password }) {
+//   } catch (error) {
+//     console.log("login::error", error);
+//     throw error;
+//   }
+// }
+async login({ email, password }) {
   try {
     // Check if user already has an active session
     const session = await this.account
@@ -74,6 +73,7 @@ export class Authservice{
     throw error;
   }
 }
+
 
 
     async getCurrentUser(){
