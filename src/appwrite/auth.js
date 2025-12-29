@@ -38,19 +38,43 @@ export class Authservice{
         }
     }
 
-    async login({email,password}){
-        try {
-            return await this.account.createEmailPasswordSession({
-             email: email, 
-            password: password
-            });
+    // async login({email,password}){
+    //     try {
+    //         return await this.account.createEmailPasswordSession({
+    //          email: email, 
+    //         password: password
+    //         });
 
-        } catch (error) {
-            console.log("login::error ",error);
-            throw error;
+    //     } catch (error) {
+    //         console.log("login::error ",error);
+    //         throw error;
             
-        }
+    //     }
+    // }
+    async login({ email, password }) {
+  try {
+    // Check if user already has an active session
+    const session = await this.account
+      .getSession('current')
+      .catch(() => null);
+
+    if (session) {
+      console.log("User already logged in");
+      return session;   // don't create a new session
     }
+
+    // Create new session only if none exists
+    return await this.account.createEmailPasswordSession({
+      email,
+      password
+    });
+
+  } catch (error) {
+    console.log("login::error", error);
+    throw error;
+  }
+}
+
 
     async getCurrentUser(){
         try {
