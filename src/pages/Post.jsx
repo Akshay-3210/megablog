@@ -9,9 +9,6 @@ export default function Post() {
     const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
-    const [img, setimg] = useState("")
-
-
     
 
     const userData = useSelector((state) => state.authreducer.userData);
@@ -41,8 +38,10 @@ export default function Post() {
         <div className="py-8">
             <Container>
                 <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+                    {
+                    console.log("Preview URL ",appwriteService.getFilePreview(post?.featuredimage))}
                     <img
-                        src={appwriteService.getFilePreview(post.featuredimage)}
+                        src={appwriteService.getFilePreview(post?.featuredimage)}
                         alt={post.title}
                         className="rounded-xl"
                     />
