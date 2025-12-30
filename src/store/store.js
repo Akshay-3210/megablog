@@ -3,7 +3,8 @@ import authreducer from "./authslice"
 
 const store=configureStore({
     reducer:{
-        authreducer
+        authreducer,
+        // post:postslice
     }
 });
 
