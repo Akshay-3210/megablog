@@ -7,7 +7,7 @@ function PostCard(props) {
   const { $id, title, featuredimage } = data
   return (
     <Link to={`/post/${$id}`}>
-        <div className="w-full bg-gray-100 rounded-xl p-4">
+        <div className="w-full bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
             <div className="w-full justify-center mb-4">
                 <img src={service.getFilePreview(featuredimage)} 
                 alt={title}
@@ -15,7 +15,7 @@ function PostCard(props) {
                 />
             </div>
             <h2
-            className='text-xl font-bold'
+            className='text-xl font-bold text-blue-950'
             >{title}</h2>
         </div>
     </Link>
